@@ -92,7 +92,7 @@ library_management_system/
 ## Screenshots
 
 ### Login Page
-![Login Page](static/images/login_page.png)
+![Login Page](static/image/login_page.png)
 
 ### Librarian Dashboard
 ![Librarian Dashboard](static/image/librarian_page.png)
