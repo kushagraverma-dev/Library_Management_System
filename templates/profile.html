@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}My Profile · Library{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4"><div><h2 class="fw-bold mb-1"><i class="bi bi-person-gear me-2"></i>My Profile</h2><p class="text-muted mb-0">Update your account details or password.</p></div><a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary"><i class="bi bi-arrow-left me-1"></i>Dashboard</a></div>
+<div class="row g-4">
+    <div class="col-lg-7">
+        <div class="card border-0 shadow-sm"><div class="card-body p-4">
+            <h5 class="fw-bold mb-3">Account details</h5>
+            <form method="post">
+                <label class="form-label">Full name</label><input class="form-control mb-3" name="name" value="{{ current_user.name }}" required maxlength="120">
+                <label class="form-label">Email address</label><input class="form-control mb-3" name="email" type="email" value="{{ current_user.email }}" required maxlength="255">
+                <label class="form-label">Role</label><input class="form-control mb-4" value="{{ 'Librarian' if current_user.role == 'librarian' else 'Reader' }}" disabled>
+                <button class="btn btn-primary"><i class="bi bi-save me-1"></i>Save changes</button>
+            </form>
+        </div></div>
+    </div>
+    <div class="col-lg-5"><div class="card border-0 shadow-sm"><div class="card-body p-4"><h5 class="fw-bold">Security</h5><p class="text-muted">Change your password without leaving your account.</p><a href="{{ url_for('change_password') }}" class="btn btn-outline-primary"><i class="bi bi-shield-lock me-1"></i>Change password</a></div></div></div>
+</div>
+{% endblock %}

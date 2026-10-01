@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Reader Registration · Library{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-7 col-lg-5">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body p-4 p-lg-5">
+                <div class="brand-icon mb-3"><i class="bi bi-person-plus"></i></div>
+                <h2 class="fw-bold">Reader registration</h2>
+                <p class="text-muted">Your account will remain pending until a librarian approves it.</p>
+                <form method="post">
+                    <label class="form-label">Full name</label>
+                    <input class="form-control mb-3" name="name" required maxlength="120">
+                    <label class="form-label">Email address</label>
+                    <input class="form-control mb-3" name="email" type="email" required maxlength="255">
+                    <label class="form-label">Password</label>
+                    <input class="form-control mb-3" name="password" type="password" minlength="8" required>
+                    <label class="form-label">Confirm password</label>
+                    <input class="form-control mb-4" name="confirm_password" type="password" minlength="8" required>
+                    <button class="btn btn-primary w-100"><i class="bi bi-send me-2"></i>Submit registration</button>
+                </form>
+                <div class="text-center mt-3"><a href="{{ url_for('login') }}"><i class="bi bi-arrow-left me-1"></i>Back to login</a></div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}Login · Library{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center align-items-center min-vh-75">
+    <div class="col-md-6 col-lg-4">
+
+        <div class="card border-0 shadow-sm login-card">
+            <div class="card-body p-4 p-lg-5">
+
+                <div class="brand-icon mb-3">
+                    <i class="bi bi-book-half"></i>
+                </div>
+
+                <h2 class="fw-bold">Welcome back</h2>
+
+                <p class="text-muted mb-4">
+                    Use your registered email. The system automatically identifies your role.
+                </p>
+
+                <form method="post">
+                    <label class="form-label">Email address</label>
+
+                    <div class="input-group mb-3">
+                        <span class="input-group-text">
+                            <i class="bi bi-envelope"></i>
+                        </span>
+                        <input type="email" name="email" class="form-control" required autocomplete="email">
+                    </div>
+
+                    <label class="form-label">Password</label>
+
+                    <div class="input-group mb-3">
+                        <span class="input-group-text">
+                            <i class="bi bi-lock"></i>
+                        </span>
+                        <input type="password" name="password" class="form-control" required
+                            autocomplete="current-password">
+                    </div>
+
+                    <button class="btn btn-primary w-100">
+                        <i class="bi bi-box-arrow-in-right me-2"></i>
+                        Login
+                    </button>
+                </form>
+
+                <div class="text-center mt-3">
+                    <span class="text-muted">New reader?</span>
+                    <a href="{{ url_for('register') }}">Create an account</a>
+                </div>
+
+                <div class="notice-box mt-4">
+                    <i class="bi bi-info-circle me-1"></i>
+                    New reader accounts require librarian approval before login.
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <!-- <div class="text-center mt-4 mb-3">
+            <p class="mb-1 text-muted small">
+                &copy; {{ current_year }} Library Management System
+                Designed &amp; Developed by <strong class="text-dark">Kushagra Verma</strong>
+            </p>
+        </div> -->
+
+    </div>
+</div>
+{% endblock %}

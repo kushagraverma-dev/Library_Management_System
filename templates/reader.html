@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Reader Dashboard · Library{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-start mb-4"><div><h2 class="fw-bold mb-1"><i class="bi bi-person-workspace me-2"></i>Reader Dashboard</h2><p class="text-muted mb-0">Borrow books and keep track of your exact return deadline.</p></div><span class="badge text-bg-primary fs-6">{{ active_loans|length }}/{{ max_books_per_reader }} active</span></div>
+
+{% for loan in active_loans if not loan.is_overdue and loan.remaining_seconds <= 259200 %}
+<div class="alert alert-warning border-0 shadow-sm"><i class="bi bi-alarm me-2"></i><strong>Return reminder:</strong> You have {{ (loan.remaining_seconds // 86400) }} day{{ '' if (loan.remaining_seconds // 86400) == 1 else 's' }} left to return <strong>{{ loan.book.title }}</strong>. Please return it by {{ loan.due_datetime.strftime('%d %b %Y at %I:%M %p') }}.</div>
+{% endfor %}
+{% for loan in active_loans if loan.is_overdue %}
+<div class="alert alert-danger border-0 shadow-sm"><i class="bi bi-exclamation-octagon me-2"></i><strong>Overdue:</strong> {{ loan.book.title }} is overdue. Current penalty: <strong>₹{{ '%.0f'|format(loan.current_penalty) }}</strong>.</div>
+{% endfor %}
+
+<div class="card border-0 shadow-sm mb-4"><div class="card-body"><div class="d-flex justify-content-between align-items-center mb-3"><h5 class="fw-bold mb-0"><i class="bi bi-journal-bookmark me-2"></i>My Books</h5><span class="text-muted small">Late fee: ₹{{ late_fee_per_day }}/started late day</span></div><div class="table-responsive"><table class="table align-middle"><thead><tr><th>Book</th><th>Issued</th><th>Return deadline</th><th>Penalty</th><th>Status</th><th></th></tr></thead><tbody>{% for loan in loans %}<tr><td class="fw-semibold">{{ loan.book.title }}</td><td>{{ loan.issued_at.strftime('%d %b %Y') }}</td><td>{{ loan.due_datetime.strftime('%d %b %Y at %I:%M %p') }}</td><td>₹{{ '%.0f'|format(loan.current_penalty if loan.status == 'issued' else loan.penalty) }}</td><td><span class="badge text-bg-{{ 'success' if loan.status == 'returned' else ('danger' if loan.is_overdue else 'primary') }}">{{ 'Returned' if loan.status == 'returned' else ('Overdue' if loan.is_overdue else 'Issued') }}</span></td><td>{% if loan.status == 'issued' %}<form method="post" action="{{ url_for('reader_return', loan_id=loan.id) }}"><button class="btn btn-sm btn-outline-success"><i class="bi bi-arrow-return-left me-1"></i>Return</button></form>{% else %}{{ loan.returned_datetime.strftime('%d %b %Y at %I:%M %p') if loan.returned_datetime else '—' }}{% endif %}</td></tr>{% else %}<tr><td colspan="6" class="text-center text-muted py-4">No loan history yet.</td></tr>{% endfor %}</tbody></table></div></div></div>
+
+<div class="card border-0 shadow-sm"><div class="card-body"><div class="d-flex justify-content-between align-items-center mb-3"><h5 class="fw-bold mb-0"><i class="bi bi-collection me-2"></i>Library Catalogue</h5><span class="text-muted small">You can issue up to {{ max_books_per_reader }} books</span></div><div class="row g-3">{% for book in books %}<div class="col-md-6 col-xl-4"><div class="book-card h-100"><div class="d-flex justify-content-between"><span class="badge text-bg-light">{{ book.category }}</span><span class="small text-muted"><i class="bi bi-stack me-1"></i>{{ book.available_copies }}/{{ book.total_copies }}</span></div><div class="book-icon"><i class="bi bi-book"></i></div><h5 class="mt-3 mb-1">{{ book.title }}</h5><p class="text-muted mb-1">{{ book.author }}</p><p class="small text-muted mb-1">ISBN: {{ book.isbn }}</p><p class="small mb-3">Price: ₹{{ '%.2f'|format(book.price) }}</p>{% set already_borrowed = loans|selectattr('book_id', 'equalto', book.id)|selectattr('status', 'equalto', 'issued')|list|length > 0 %}{% if already_borrowed %}<button class="btn btn-secondary btn-sm w-100" disabled><i class="bi bi-check-circle me-1"></i>Already Borrowed</button>{% elif book.available_copies < 1 %}<button class="btn btn-secondary btn-sm w-100" disabled><i class="bi bi-x-circle me-1"></i>Unavailable</button>{% elif active_loans|length >= max_books_per_reader %}<button class="btn btn-secondary btn-sm w-100" disabled><i class="bi bi-lock me-1"></i>4 Book Limit Reached</button>{% else %}<form method="post" action="{{ url_for('borrow_book', book_id=book.id) }}"><label class="form-label small fw-semibold">Return date and time</label><input class="form-control form-control-sm mb-2 return-at-field" type="datetime-local" name="return_at" min="{{ datetime_local_value(now) }}" max="{{ datetime_local_value(max_return_datetime) }}" step="1" value="{{ datetime_local_value(max_return_datetime) }}" required><div class="small text-muted mb-2">Select a time from now up to exactly 14 days from now.</div><button class="btn btn-primary btn-sm w-100"><i class="bi bi-bookmark-plus me-1"></i>Borrow Book</button></form>{% endif %}</div></div>{% else %}<div class="col-12 text-center text-muted py-4">No books in the catalogue.</div>{% endfor %}</div></div></div>
+{% endblock %}
+{% block scripts %}<script>
+function syncReturnFields() {
+    const now = new Date();
+    const limit = new Date(now.getTime() + 14 * 24 * 60 * 60 * 1000);
+    const formatLocal = value => {
+        const pad = number => String(number).padStart(2, '0');
+        return value.getFullYear() + '-' + pad(value.getMonth() + 1) + '-' + pad(value.getDate()) + 'T' + pad(value.getHours()) + ':' + pad(value.getMinutes()) + ':' + pad(value.getSeconds());
+    };
+    document.querySelectorAll('.return-at-field').forEach(field => {
+        field.min = formatLocal(now);
+        field.max = formatLocal(limit);
+        if (!field.value) field.value = field.max;
+    });
+}
+syncReturnFields();
+</script>{% endblock %}
