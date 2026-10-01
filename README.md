@@ -89,6 +89,25 @@ library_management_system/
 └── static/
     ├── style.css
 ```
+## Screenshots
+
+### Login Page
+![Login Page](static/images/login.png)
+
+### Librarian Dashboard
+![Librarian Dashboard](static/image/librarian_page.png)
+
+### Librarian Page 1
+![Librarian Page 1](static/image/librarian_page_1.png)
+
+### Librarian Page 2
+![Librarian Page 2](static/image/librarian_page_2.png)
+
+### Student Dashboard
+![Student Dashboard](static/image/student_page.png)
+
+### Student Page 2
+![Student Page 2](static/image/student_page_2.png)
 
 ## Installation
 
